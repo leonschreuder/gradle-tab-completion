@@ -9,24 +9,20 @@ Usage
 ```$ gradle [TAB]```
 
 ```
-androidDependencies      connectedInstrumentTest  lintRelease
-assemble                 dependencies             projects
-assembleDebug            dependencyInsight        properties
-assembleDebugTest        deviceCheck              signingReport
-assembleRelease          help                     tasks
-build                    init                     uninstallAll
-buildDependents          installDebug             uninstallDebug
-buildNeeded              installDebugTest         uninstallDebugTest
-check                    installRelease           uninstallRelease
-clean                    lint                     wrapper
-connectedCheck           lintDebug
+androidDependencies      check                    init                     properties
+assemble                 clean                    installDebug             signingReport
+assembleDebug            connectedCheck           installDebugTest         tasks
+assembleDebugTest        connectedInstrumentTest  installRelease           uninstallAll
+assembleRelease          dependencies             lint                     uninstallDebug
+build                    dependencyInsight        lintDebug                uninstallDebugTest
+buildDependents          deviceCheck              lintRelease              uninstallRelease
+buildNeeded              help                     projects                 wrapper
 ```
 
 ```$ gradle c[TAB]```
 
 ```
-check                    connectedCheck
-clean                    connectedInstrumentTest
+check                    clean                    connectedCheck           connectedInstrumentTest
 ```
 
 Gives tab completions relevent to the current Gradle project (if any).
