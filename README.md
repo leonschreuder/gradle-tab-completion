@@ -6,9 +6,7 @@ A quick-and-dirty tab completion script that works for Bash on the Mac.  Relies 
 Usage
 -----
 
-Type ```$ gradle [TAB]```
-
-Get: 
+```$ gradle [TAB]```
 
 ```
 androidDependencies      assembleRelease          check                    dependencies             init                     lint                     properties               uninstallDebug
@@ -17,9 +15,7 @@ assembleDebug            buildDependents          connectedCheck           devic
 assembleDebugTest        buildNeeded              connectedInstrumentTest  help
 ```
 
-Type ```$ gradle c[TAB]```
-
-Get:
+```$ gradle c[TAB]```
 
 ```check                    clean                    connectedCheck           connectedInstrumentTest```
 
