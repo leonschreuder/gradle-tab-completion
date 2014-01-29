@@ -15,8 +15,14 @@ _gradle()
 
   # TODO: include the gradle version in the checksum?  It's kinda slow
   #local gradle_version=$($gradle_cmd --version --quiet --no-color | grep '^Gradle ' | sed 's/Gradle //g')
-
-  local gradle_files_checksum=$(md5 -q -s "$(md5 -q $(find . -name build.gradle))")
+  
+  local gradle_files_checksum='';
+  if [[ -f build.gradle ]]; then # top-level gradle file
+    local all_gradle_files=$(find . -name build.gradle 2>/dev/null)
+    gradle_files_checksum=$(md5 -q -s "$(md5 -q $all_gradle_files)")
+  else # no top-level gradle file
+    gradle_files_checksum='no_gradle_files'
+  fi
   if [[ -f $cache_dir/$gradle_files_checksum ]]; then # cached! yay!
     commands=$(cat $cache_dir/$gradle_files_checksum)
   else # not cached! boo-urns!
