@@ -27,7 +27,9 @@ _gradle()
     commands=$(cat $cache_dir/$gradle_files_checksum)
   else # not cached! boo-urns!
     commands=$($gradle_cmd --no-color --quiet tasks | grep ' - ' | awk '{print $1}' | tr '\n' ' ')
-    echo $commands > $cache_dir/$gradle_files_checksum
+    if [[ ! -z $commands ]]; then
+      echo $commands > $cache_dir/$gradle_files_checksum
+    fi
   fi
   COMPREPLY=( $(compgen -W "$commands" -- $cur) )
 }
