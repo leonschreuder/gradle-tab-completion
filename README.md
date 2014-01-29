@@ -35,7 +35,8 @@ Install
 --------
 
 ```
-curl -s https://gist.github.com/nolanlawson/8694399/raw/gradle-tab-completion.bash -o ~/gradle-tab-completion.bash
+curl -s https://gist.github.com/nolanlawson/8694399/raw/gradle-tab-completion.bash \
+  -o ~/gradle-tab-completion.bash
 ```
 
 Then add to your ```~/.bash_profile```:
