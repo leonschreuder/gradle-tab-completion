@@ -29,7 +29,7 @@ check                    connectedCheck
 clean                    connectedInstrumentTest
 ```
 
-Gives tab completions relevent to the current gradle project (if any).
+Gives tab completions relevent to the current Gradle project (if any).
 
 Install
 --------
