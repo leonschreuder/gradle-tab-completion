@@ -45,7 +45,7 @@ Then add to your ```~/.bash_profile```:
 source ~/gradle-tab-completion.bash
 ```
 
-It will be super slow the first time you use it, but after that it'll be super fast, because it's cached based on the md5sum of your ```build.gradle``` files.
+It will be **kinda slow** the first time. But after that, it'll be **super fast**, because it's cached based on the md5sum of your ```build.gradle``` files.
 
 
 TODOs
