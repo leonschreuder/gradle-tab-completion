@@ -1,12 +1,12 @@
 Gradle tab completion script for Bash
 ====================
 
-A tab completion script that works for Bash on Mac OS X.  Relies on the BSD ```md5``` command, so it might not work out-of-the-box on Linux.  (Pull requests welcome!)
+A tab completion script that works for Bash on Mac OS X.  Relies on the BSD `md5` command on Mac and `md5sum` on Linux, so as long as yo have one of those two commands, this should work.
 
 Usage
 -----
 
-```$ gradle [TAB]```
+    $ gradle [TAB]
 
 ```
 androidDependencies      check                    init                     properties
@@ -19,7 +19,7 @@ buildDependents          deviceCheck              lintRelease              unins
 buildNeeded              help                     projects                 wrapper
 ```
 
-```$ gradle c[TAB]```
+    $ gradle c[TAB]
 
 ```
 check                    clean                    connectedCheck           connectedInstrumentTest
@@ -35,7 +35,7 @@ curl -s https://gist.github.com/nolanlawson/8694399/raw/gradle-tab-completion.ba
   -o ~/gradle-tab-completion.bash
 ```
 
-Then add to your ```~/.bash_profile```:
+Then add to your `~/.bash_profile`:
 
 ```
 source ~/gradle-tab-completion.bash
@@ -44,8 +44,7 @@ source ~/gradle-tab-completion.bash
 It will be kinda slow the first time you use it. But after that, it'll be super fast, because everything's cached based on the md5sum of your ```build.gradle``` files.
 
 
-TODOs
+Credits
 ------
 
-* zsh support
-* Linux support
+Thanks to @ligi for Linux support!
