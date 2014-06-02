@@ -2,10 +2,10 @@ _gradle()
 {
   local cur=${COMP_WORDS[COMP_CWORD]}
   local gradle_cmd='gradle'
-  if [[ -f ./gradlew ]]; then
+  if [[ -x ./gradlew ]]; then
     gradle_cmd='./gradlew'
   fi
-  if [[ -f ../gradlew ]]; then
+  if [[ -x ../gradlew ]]; then
     gradle_cmd='../gradlew'
   fi
 
