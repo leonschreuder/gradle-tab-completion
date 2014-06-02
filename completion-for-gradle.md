@@ -47,4 +47,4 @@ It will be kinda slow the first time you use it. But after that, it'll be super 
 Credits
 ------
 
-Thanks to @ligi for Linux support!
+Thanks to [@ligi](https://github.com/ligi) for Linux support!

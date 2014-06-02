@@ -19,8 +19,8 @@ _gradle()
   local gradle_files_checksum='';
   if [[ -f build.gradle ]]; then # top-level gradle file
     if [[ -x `which md5` ]]; then # mac
-     local all_gradle_files=$(find . -name build.gradle 2>/dev/null)
-     gradle_files_checksum=$(md5 -q -s "$(md5 -q $all_gradle_files)")
+      local all_gradle_files=$(find . -name build.gradle 2>/dev/null)
+      gradle_files_checksum=$(md5 -q -s "$(md5 -q $all_gradle_files)")
     else # linux
       gradle_files_checksum=($(find . -name build.gradle | xargs md5sum | md5sum))
     fi
