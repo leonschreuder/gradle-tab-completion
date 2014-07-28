@@ -31,7 +31,7 @@ Install
 --------
 
 ```
-curl -s https://gist.github.com/nolanlawson/8694399/raw/gradle-tab-completion.bash \
+curl -L -s https://gist.github.com/nolanlawson/8694399/raw/gradle-tab-completion.bash \
   -o ~/gradle-tab-completion.bash
 ```
 
