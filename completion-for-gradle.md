@@ -1,7 +1,7 @@
 Gradle tab completion script for Bash
 ====================
 
-A tab completion script that works for Bash on Mac OS X.  Relies on the BSD `md5` command on Mac and `md5sum` on Linux, so as long as yo have one of those two commands, this should work.
+A tab completion script that works for Bash.  Relies on the BSD `md5` command on Mac and `md5sum` on Linux, so as long as yo have one of those two commands, this should work.
 
 Usage
 -----
