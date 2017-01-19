@@ -12,22 +12,22 @@ callEveryTest() {
             testFileFailed=false
             source $test_file
 
-            callIfExists setup
 
             for t in `compgen -A function`
             do
                 if [[ $t == "test_"* ]]; then
                     log "  $t"
+                    callIfExists setup
                     eval $t
 
                     if [ $? != 0 ]; then
                         testFileFailed=true
                         break
                     fi
+                    callIfExists teardown
                 fi
             done
 
-            callIfExists teardown
 
             if [ $testFileFailed == true ]; then
                 echo "FAIL!!"
@@ -61,7 +61,7 @@ callIfExists() {
 
 fail() {
     echo "FAIL: ${FUNCNAME[1]} >"
-    echo "   $1"
+    printf "    $1"
     callIfExists teardown
     exit 1
 }
