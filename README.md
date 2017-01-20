@@ -1,3 +1,6 @@
+
+Forked from https://gist.github.com/nolanlawson/8694399/
+
 Gradle tab completion script for Bash
 ====================
 
