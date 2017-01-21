@@ -38,17 +38,18 @@ test_getGradleCommand_ShouldSupportLocalGradleWrapper() {
     fi
 }
 
-# test_getGradleTasks() {
-#     cd $LOCAL_GRADLE_REPO
+test_getGradleTasks() {
+    cd $LOCAL_GRADLE_REPO
 
-#     result=$(requestTasksFromGradle)
+    result=$(requestTasksFromGradle)
 
-#     exp='assemble build buildDependents buildNeeded classes clean jar testClasses init wrapper javadoc buildEnvironment components dependencies dependencyInsight help model projects properties tasks check test syntastic install'
-#     # exp='assemble build buildDependents buildNeeded classes clean j9Classes jar testClasses init wrapper javadoc buildEnvironment components dependencies dependencyInsight dependentComponents help model projects properties tasks cleanEclipse cleanIdea eclipse idea uploadArchives check test deploy deployDownloadedArtifacts deploySpeechAdi deploySpeechRevo downloadArtifactsAdi_AS downloadArtifactsAdi_CLU22 downloadArtifactsAdi_EU downloadArtifactsAdi_NAR downloadArtifactsRevo_AS downloadArtifactsRevo_CLU22 downloadArtifactsRevo_EU downloadArtifactsRevo_NAR removeSpeechJars'
-#     if [[ $result != $exp ]]; then
-#         fail "expected: '$exp'\n    got:      '$result'"
-#     fi
-# }
+
+    exp='justSomeTask assemble build buildDependents buildNeeded classes compileJava processResources clean jar testClasses compileTestJava processTestResources init wrapper javadoc buildEnvironment components dependencies dependencyInsight help model projects properties tasks check test syntastic install justSomeTask'
+    # exp='assemble build buildDependents buildNeeded classes clean j9Classes jar testClasses init wrapper javadoc buildEnvironment components dependencies dependencyInsight dependentComponents help model projects properties tasks cleanEclipse cleanIdea eclipse idea uploadArchives check test deploy deployDownloadedArtifacts deploySpeechAdi deploySpeechRevo downloadArtifactsAdi_AS downloadArtifactsAdi_CLU22 downloadArtifactsAdi_EU downloadArtifactsAdi_NAR downloadArtifactsRevo_AS downloadArtifactsRevo_CLU22 downloadArtifactsRevo_EU downloadArtifactsRevo_NAR removeSpeechJars'
+    if [[ $result != $exp ]]; then
+        fail "expected: '$exp'\n    got:      '$result'"
+    fi
+}
 
 test_readCacheForCwd() {
     cd $LOCAL_GRADLE_REPO

@@ -10,8 +10,38 @@ getGradleCommand() {
 
 requestTasksFromGradle() {
     local gradle_cmd=$(getGradleCommand)
-    commands=$($gradle_cmd tasks --console plain --quiet --offline | sed -n s/\ -\ .*//p | tr '\n' ' ')
+    # commands=$($gradle_cmd tasks --console plain --all --quiet --offline | sed -n s/\ -\ .*//p | tr '\n' ' ')
+    local taskCommandOutput=$($gradle_cmd tasks --console plain --all --quiet --offline)
+
+    # This mess makes sure all tasks are caught, even without a description,
+    # but none of the other stuff. To prevent the Rules from being added we
+    # break after the 'Rules' heading.
+    local commands=''
+    local currLine=''
+    while read nextLine || [[ -n $nextLine ]]; do
+        if [[ $nextLine == "--"* ]]; then
+            if [[ $currLine == "Rules" ]]; then
+                break
+            fi
+            currLine=''
+        else
+            if [[ $currLine != '' ]]; then
+                commands="$commands $(trim ${currLine%\ -\ *})"
+            fi
+            currLine=$nextLine
+        fi
+    done <<< $(printf "$taskCommandOutput")
     echo $commands
+}
+
+#credit: http://stackoverflow.com/a/33248547/3968618
+trim() {
+    local s2 s="$*"
+    # note: the brackets in each of the following two lines contain one space
+    # and one tab
+    until s2="${s#\ \t]}"; [ "$s2" = "$s" ]; do s="$s2"; done
+    until s2="${s%\ \t]}"; [ "$s2" = "$s" ]; do s="$s2"; done
+    echo "$s"
 }
 
 getGradleTasksFromCache() {

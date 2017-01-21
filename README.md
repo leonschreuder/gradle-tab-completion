@@ -28,7 +28,7 @@ buildNeeded              help                     projects                 wrapp
 You can even use sub-selection:
 
 ```
-    $ gradle c[TAB]
+    $ ./gradlew c[TAB]
 check                    clean                    connectedCheck           connectedInstrumentTest
 ```
 
