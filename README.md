@@ -1,17 +1,20 @@
 
-Forked from https://gist.github.com/nolanlawson/8694399/
+A Gradle tab completion script for Bash
+================================================================================
 
-Gradle tab completion script for Bash
-====================
+Do you use gradle from the commandline and sometimes find yourself staring
+dreamily into the distance at the thought of just pressing tab to see which
+tasks you can execute?
 
-A tab completion script that works for Bash.  Relies on the BSD `md5` command on Mac and `md5sum` on Linux, so as long as you have one of those two commands, this should work.
+Well now you can!
 
 Usage
------
+--------------------------------------------------------------------------------
 
-    $ gradle [TAB]
+Look at how we get propositions for every task in your gradle project:
 
 ```
+    $ gradle [TAB]
 androidDependencies      check                    init                     properties
 assemble                 clean                    installDebug             signingReport
 assembleDebug            connectedCheck           installDebugTest         tasks
@@ -22,32 +25,59 @@ buildDependents          deviceCheck              lintRelease              unins
 buildNeeded              help                     projects                 wrapper
 ```
 
-    $ gradle c[TAB]
+You can even use sub-selection:
 
 ```
+    $ gradle c[TAB]
 check                    clean                    connectedCheck           connectedInstrumentTest
 ```
 
-Gives tab completions relevent to the current Gradle project (if any).
+The tab completions asks Gradle for its tasks - which might have you waiting
+the first time - but the script caches it (magically) so you have the
+lighting-speed completion you always dreamed of after that! It will also track
+changes in your build.gradle scripts, so it knows when tasks are added or
+removed\*.
+
+
+\* It just saves a hash of the build.gradle files in your project. So don't go
+around sprinkeling task related gradle-magic around in other files.
+
 
 Install
---------
+--------------------------------------------------------------------------------
 
 ```
-curl -L -s https://gist.github.com/nolanlawson/8694399/raw/gradle-tab-completion.bash \
+curl -L -s https://raw.githubusercontent.com/meonlol/gradle-tab-completion/master/gradle-tab-completion.bash \
   -o ~/gradle-tab-completion.bash
 ```
 
-Then add to your `~/.bash_profile`:
+Then add this to your `~/.bash_profile`:
 
 ```
 source ~/gradle-tab-completion.bash
 ```
 
-It will be kinda slow the first time you use it. But after that, it'll be super fast, because everything's cached based on the md5sum of your ```build.gradle``` files.
+Credit
+--------------------------------------------------------------------------------
+
+This script was forked from [@nolanlawson](https://github.com/nolanlawson) here
+https://gist.github.com/nolanlawson/8694399/ . He did all the hard work of
+scripting the logic. He again thanks [@ligi](https://github.com/ligi) for Linux
+support. Credit where credit is due.
+
+### My improvements:
+
+#### Smarter cache
+
+Original caching only saved the tasks from one 'gradle tasks' run. The improved
+caching saves a cache instance for every directory, and is therefore unique for
+every repository.
 
 
-Credits
-------
+#### Major refactoring && adding tests
 
-Thanks to [@ligi](https://github.com/ligi) for Linux support!
+The original script resisted my Linux machine with a passion, so initially I
+just wanted to fix that. Since I'm a typically lazy developer when it comes to
+manually testing my code in different circumstances, I spent WAAAY to much time
+writing tests for all the logic, and ended up adding some improvements.
+
