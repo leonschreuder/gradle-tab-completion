@@ -61,7 +61,7 @@ callIfExists() {
 
 fail() {
     echo "FAIL: ${FUNCNAME[1]} >"
-    printf "    $1"
+    printf "    $1\n" #we use printf so we can format the fail string
     callIfExists teardown
     exit 1
 }
