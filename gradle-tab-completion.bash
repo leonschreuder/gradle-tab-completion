@@ -1,5 +1,10 @@
 export CASHE_FILE="$HOME/.gradle/.gradle_completion_cash"
 
+#TODO:
+# - commandline flags support https://gist.github.com/Ea87/46401a96df31cd208a87
+# - gitbash & cygwin support
+# - module support
+
 getGradleCommand() {
     local gradle_cmd='gradle'
     if [[ -x ./gradlew ]]; then
@@ -10,27 +15,30 @@ getGradleCommand() {
 
 requestTasksFromGradle() {
     local gradle_cmd=$(getGradleCommand)
-    # commands=$($gradle_cmd tasks --console plain --all --quiet --offline | sed -n s/\ -\ .*//p | tr '\n' ' ')
-    local taskCommandOutput=$($gradle_cmd tasks --console plain --all --quiet --offline)
+    local taskCommandOutput=$($gradle_cmd tasks --console plain --quiet --offline)
+    echo $(parseGradleTaskOutput "$taskCommandOutput")
+}
 
-    # This mess makes sure all tasks are caught, even without a description,
-    # but none of the other stuff. To prevent the Rules from being added we
-    # break after the 'Rules' heading.
+parseGradleTaskOutput() {
     local commands=''
-    local currLine=''
-    while read nextLine || [[ -n $nextLine ]]; do
-        if [[ $nextLine == "--"* ]]; then
-            if [[ $currLine == "Rules" ]]; then
-                break
-            fi
-            currLine=''
+    local readingTasks=0
+    local lastLineEmpty=1 # The command output has a title that starts with a line of dashes
+    while read -r line || [[ -n $line ]]; do
+        if [[ $line == "--"* && $lastLineEmpty == 0 ]]; then
+            readingTasks=1
+        elif [[ $line == '' ]]; then
+            readingTasks=0
+            lastLineEmpty=1
         else
-            if [[ $currLine != '' ]]; then
-                commands="$commands $(trim ${currLine%\ -\ *})"
+            lastLineEmpty=0
+            if [[ $readingTasks == 1 ]]; then
+                if [[ $line != "Pattern:"* ]]; then
+                    commands="$commands $(trim ${line%\ -\ *})"
+                fi
             fi
-            currLine=$nextLine
         fi
-    done <<< $(printf "$taskCommandOutput")
+    done <<< "$@"
+
     echo $commands
 }
 
@@ -51,7 +59,7 @@ getGradleTasksFromCache() {
 
         # Return the tasks only if the cache is up to date
         currentHash=$(getGradleChangesHash)
-        if [ ${resultArray[1]} == $currentHash ]; then
+        if [[ ${resultArray[1]} == $currentHash ]]; then
             echo ${resultArray[2]}
         fi
     fi
@@ -77,28 +85,44 @@ writeTasksToCache() {
         while read cacheLine || [[ -n $cacheLine ]]; do
             local i=$((i+1))
             if [[ $cacheLine == "$cwd"* ]]; then
-                #overwrite the line
-                sed -i '' "${i}s:.*:${newLine}:" $CASHE_FILE
+                replaceLineNumberInFileWith $i $CASHE_FILE "$newLine"
                 return 0
             fi
-        done <$CASHE_FILE
+        done <<< $CASHE_FILE
     fi
     # If there was no file or the file did not have a cache for this dir, we add it here
     echo $newLine >> $CASHE_FILE
 }
 
+replaceLineNumberInFileWith() {
+    if echo "$(sed -i 2>&1 )" | grep -q "option requires an argument"; then
+        # That's BSD sed, the osx default
+        sed -i '' "${1}s#.*#$3#" $2
+    else
+        sed -i "${1}s#.*#$3#" $2
+    fi
+}
+
 getGradleChangesHash() {
-    if hash md5 2>/dev/null; then
+    if hash git 2>/dev/null; then
+        find . -name build.gradle 2> /dev/null \
+            | xargs cat \
+            | git hash-object --stdin
+    elif hash md5 2>/dev/null; then
         # use md5 for hashing (Mac OS X)
-        find . -name build.gradle -exec md5 {} \; | md5
+        find . -name build.gradle 2> /dev/null \
+            | xargs cat \
+            | md5
     else
         # use md5sum for hashing (Linux)
-        find . -name build.gradle -exec md5sum {} \; | md5sum | cut -f1 -d' '
+        find . -name build.gradle 2> /dev/null \
+            | xargs cat \
+            | md5sum \
+            | cut -f1 -d' '
     fi
 }
 
 _gradle() {
-    local cur=${COMP_WORDS[COMP_CWORD]}
     local gradle_cmd=$(getGradleCommand)
 
     local commands=$(getGradleTasksFromCache)
@@ -108,8 +132,16 @@ _gradle() {
         writeTasksToCache $commands
     fi
 
-    COMPREPLY=( $(compgen -W "${commands}" -- $cur) )
+    COMPREPLY=()
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    colonprefixes=${cur%"${cur##*:}"}
+    COMPREPLY=( $(compgen -W "${commands}"  -- $cur))
+    local i=${#COMPREPLY[*]}
+    while [ $((--i)) -ge 0 ]; do
+        COMPREPLY[$i]=${COMPREPLY[$i]#"$colonprefixes"}
+    done
 }
+
 complete -F _gradle gradle
 complete -F _gradle gradlew
 complete -F _gradle ./gradlew
