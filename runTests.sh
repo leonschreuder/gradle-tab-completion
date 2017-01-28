@@ -53,8 +53,16 @@ callIfExists() {
 callTest() {
     testFunc=$1
     log "  $testFunc"
+
     callIfExists setup
-    eval $testFunc
+
+    if [[ $TIME_FUNCS ]]; then
+        echo
+        echo "$testFunc"
+        eval "time -p $testFunc"
+    else
+        eval $testFunc
+    fi
 
     if [ $? != 0 ]; then
         ((FAILING_TESTS_IN_FILE++))
@@ -110,7 +118,7 @@ usage() {
 #============================================================
 
 # adding : behind the command will require arguments
-while getopts "vha" opt; do
+while getopts "vhat" opt; do
     case $opt in
         h)
             usage
@@ -120,6 +128,9 @@ while getopts "vha" opt; do
             ;;
         a)
             export RUN_LARGE_TESTS=true
+            ;;
+        t)
+            export TIME_FUNCS=true
             ;;
         *)
             usage

@@ -1,58 +1,64 @@
 export CASHE_FILE="$HOME/.gradle/.gradle_completion_cash"
 
 #TODO:
-# - commandline flags support https://gist.github.com/Ea87/46401a96df31cd208a87
 # - gitbash & cygwin support
 # - module support
 
-getGradleCommand() {
-    local gradle_cmd='gradle'
-    if [[ -x ./gradlew ]]; then
-        gradle_cmd='./gradlew'
-    fi
-    echo $gradle_cmd
+_gradle() {
+    COMPREPLY=()
+    local cur=${COMP_WORDS[COMP_CWORD]}
+
+    local commands="$(getCommandsForCurrentPrefix $cur)"
+
+    colonprefixes=${cur%"${cur##*:}"}
+    COMPREPLY=( $(compgen -W "${commands}"  -- $cur))
+    local i=${#COMPREPLY[*]}
+    while [ $((--i)) -ge 0 ]; do
+        COMPREPLY[$i]=${COMPREPLY[$i]#"$colonprefixes"}
+    done
 }
 
-requestTasksFromGradle() {
-    local gradle_cmd=$(getGradleCommand)
-    local taskCommandOutput=$($gradle_cmd tasks --console plain --quiet --offline)
-    echo $(parseGradleTaskOutput "$taskCommandOutput")
-}
-
-parseGradleTaskOutput() {
-    local commands=''
-    local readingTasks=0
-    local lastLineEmpty=1 # The command output has a title that starts with a line of dashes
-    while read -r line || [[ -n $line ]]; do
-        if [[ $line == "--"* && $lastLineEmpty == 0 ]]; then
-            readingTasks=1
-        elif [[ $line == '' ]]; then
-            readingTasks=0
-            lastLineEmpty=1
-        else
-            lastLineEmpty=0
-            if [[ $readingTasks == 1 ]]; then
-                if [[ $line != "Pattern:"* ]]; then
-                    commands="$commands $(trim ${line%\ -\ *})"
-                fi
-            fi
+getCommandsForCurrentPrefix() {
+    currentPrefix=$1
+    commands=$(getCommandsFromCache)
+    if [[ $currentPrefix == "-"* ]]; then
+        if [[ $currentPrefix != "--"* ]]; then
+            commands=$(getSingleDashFromString "$commands")
+        # else
+            # we have a double dash prefix, and can leave the commands as they are
         fi
-    done <<< "$@"
+    else
+        commands=${commands//-*/}
+    fi
 
+    if [[ $commands == '' ]]; then
+        commands=$(requestCommandsAndUpdateCache)
+    fi
     echo $commands
 }
 
-#credit: http://stackoverflow.com/a/33248547/3968618
-trim() {
-    local s2 s="$*"
-    # note: the brackets in each of the following two lines contain one space
-    # and one tab
-    until s2="${s#\ \t]}"; [ "$s2" = "$s" ]; do s="$s2"; done
-    until s2="${s%\ \t]}"; [ "$s2" = "$s" ]; do s="$s2"; done
-    echo "$s"
+getSingleDashFromString() {
+    # couldn't get a cross-platform solution to work, so filter the commands with a basic loop
+    result=''
+    for singleCommand in $1; do
+        if [[ $singleCommand == -* &&  $singleCommand != --* ]]; then
+            if [[ $result == '' ]]; then
+                result="$singleCommand"
+            else
+                result="$result $singleCommand"
+            fi
+        fi
+    done
+    echo $result
 }
 
-getGradleTasksFromCache() {
+requestCommandsAndUpdateCache() {
+    commands="$(requestTasksFromGradle) $(requestFlagsFromGradle)"
+    writeTasksToCache $commands
+    echo $commands
+}
+
+getCommandsFromCache() {
     cache=$(readCacheForCwd)
     if [[ $cache != '' ]]; then
         IFS='|' read -ra resultArray <<< "$cache"
@@ -73,8 +79,64 @@ readCacheForCwd() {
                 echo $cacheLine
                 return 0
             fi
-        done <$CASHE_FILE
+        done < "$CASHE_FILE"
     fi
+}
+
+getGradleChangesHash() {
+    if hash git 2>/dev/null; then
+        find . -name build.gradle 2> /dev/null \
+            | xargs cat \
+            | git hash-object --stdin
+    elif hash md5 2>/dev/null; then
+        # use md5 for hashing (Mac OS X)
+        find . -name build.gradle 2> /dev/null \
+            | xargs cat \
+            | md5
+    else
+        # use md5sum for hashing (Linux)
+        find . -name build.gradle 2> /dev/null \
+            | xargs cat \
+            | md5sum \
+            | cut -f1 -d' '
+    fi
+}
+
+requestTasksFromGradle() {
+    local gradle_cmd=$(getGradleCommand)
+    local taskCommandOutput=$($gradle_cmd tasks --console plain --quiet --offline)
+    echo $(parseGradleTaskOutput "$taskCommandOutput")
+}
+
+getGradleCommand() {
+    local gradle_cmd='gradle'
+    if [[ -x ./gradlew ]]; then
+        gradle_cmd='./gradlew'
+    fi
+    echo $gradle_cmd
+}
+
+parseGradleTaskOutput() {
+    local commands=''
+    local readingTasks=0
+    local lastLineEmpty=1 # The command output has a title that starts with a line of dashes
+    while read -r line || [[ -n $line ]]; do
+        if [[ $line == "--"* && $lastLineEmpty == 0 ]]; then
+            readingTasks=1
+        elif [[ $line == '' ]]; then
+            readingTasks=0
+            lastLineEmpty=1
+        else
+            lastLineEmpty=0
+            if [[ $readingTasks == 1 ]]; then
+                if [[ $line != "Pattern:"* ]]; then
+                    commands="$commands ${line%\ -\ *}"
+                fi
+            fi
+        fi
+    done <<< "$@"
+
+    echo $commands
 }
 
 writeTasksToCache() {
@@ -103,44 +165,27 @@ replaceLineNumberInFileWith() {
     fi
 }
 
-getGradleChangesHash() {
-    if hash git 2>/dev/null; then
-        find . -name build.gradle 2> /dev/null \
-            | xargs cat \
-            | git hash-object --stdin
-    elif hash md5 2>/dev/null; then
-        # use md5 for hashing (Mac OS X)
-        find . -name build.gradle 2> /dev/null \
-            | xargs cat \
-            | md5
-    else
-        # use md5sum for hashing (Linux)
-        find . -name build.gradle 2> /dev/null \
-            | xargs cat \
-            | md5sum \
-            | cut -f1 -d' '
-    fi
-}
-
-_gradle() {
+requestFlagsFromGradle() {
     local gradle_cmd=$(getGradleCommand)
-
-    local commands=$(getGradleTasksFromCache)
-
-    if [[ $commands == '' ]]; then
-        commands=$(requestTasksFromGradle)
-        writeTasksToCache $commands
-    fi
-
-    COMPREPLY=()
-    local cur=${COMP_WORDS[COMP_CWORD]}
-    colonprefixes=${cur%"${cur##*:}"}
-    COMPREPLY=( $(compgen -W "${commands}"  -- $cur))
-    local i=${#COMPREPLY[*]}
-    while [ $((--i)) -ge 0 ]; do
-        COMPREPLY[$i]=${COMPREPLY[$i]#"$colonprefixes"}
-    done
+    local helpCommandOutput=$($gradle_cmd --help)
+    echo $(parseGradleHelpOutput "$helpCommandOutput")
 }
+
+parseGradleHelpOutput() {
+    local result=''
+    while read -r line || [[ -n $line ]]; do
+        if [[ $line == -* ]]; then
+            cmd=${line%\ \ *}   # remove suffix till multiple spaces
+            cmd=${cmd//,/}      # now also remove commas
+            result="$result $cmd"
+        fi
+    done <<< "$@"
+    echo $result
+}
+
+
+# trigger completion on sourcing (which should be done when the bash initializes)
+#--------------------------------------------------------------------------------
 
 complete -F _gradle gradle
 complete -F _gradle gradlew
