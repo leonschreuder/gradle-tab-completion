@@ -26,11 +26,21 @@ buildDependents          deviceCheck              lintRelease              unins
 buildNeeded              help                     projects                 wrapper
 ```
 
-You can even use sub-selection:
+You can even use sub-selection...
 
 ```
     $ ./gradlew c[TAB]
 check                    clean                    connectedCheck           connectedInstrumentTest
+```
+
+And flags are supported too...
+
+```
+    $ ./gradlew -[TAB]
+-?  -D  -I  -P  -S  -a  -b  -c  -d  -g  -h  -i  -m  -p  -q  -s  -t  -u  -v  -x
+
+    $ ./gradlew --p[TAB]
+--parallel           --profile            --project-cache-dir  --project-dir        --project-prop
 ```
 
 The tab completions asks Gradle for its tasks - which might have you waiting
@@ -82,4 +92,8 @@ just wanted to fix that. Since I'm a typically lazy developer when it comes to
 manually testing my code in different circumstances, I spent WAAAY to much time
 writing tests for all the logic, and ended up adding some improvements.
 
+### Adding commandline flags
 
+`-[TAB]` and `--[TAB]` are now also supported. To prevent to much output, the flags
+are hidden by default, when using `-[TAB]` only single flags are completed and
+with `--[TAB]` the multicharacter flags are also shown.
