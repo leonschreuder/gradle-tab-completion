@@ -36,6 +36,7 @@ callEveryTest() {
     if [[ $FAILING_TESTS > 0 ]]; then
         echo $FAILING_TESTS failing tests in $TEST_FILE_COUNT files
         echo TEST SUITE FAILED
+        exit 1
     else
         echo suite successfull
     fi

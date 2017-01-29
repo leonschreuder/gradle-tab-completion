@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/meonlol/gradle-tab-completion.svg?branch=master)](https://travis-ci.org/meonlol/gradle-tab-completion)
 
 A Gradle tab completion script for Bash
 ================================================================================
@@ -80,4 +81,5 @@ The original script resisted my Linux machine with a passion, so initially I
 just wanted to fix that. Since I'm a typically lazy developer when it comes to
 manually testing my code in different circumstances, I spent WAAAY to much time
 writing tests for all the logic, and ended up adding some improvements.
+
 

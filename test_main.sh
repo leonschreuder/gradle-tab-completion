@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
-LOCAL_GRADLE_REPO='/Users/leonmoll/repos/java/code-wars/'
-LOCAL_TASKS='init wrapper buildEnvironment components dependencies dependencyInsight dependentComponents help model projects properties tasks'
-LOCAL_FLAGS='-? -h --help -a --no-rebuild -b --build-file -c --settings-file --configure-on-demand --console --continue -D --system-prop -d --debug --daemon --foreground -g --gradle-user-home --gui -I --init-script -i --info --include-build -m --dry-run --max-workers --no-daemon --offline -P --project-prop -p --project-dir --parallel --profile --project-cache-dir -q --quiet --recompile-scripts --refresh-dependencies --rerun-tasks -S --full-stacktrace -s --stacktrace --status --stop -t --continuous -u --no-search-upward -v --version -x --exclude-task'
+LOCAL_GRADLE_REPO=''
+LOCAL_TASKS=''
+LOCAL_FLAGS=''
 
 
 setup() {
     ORIG_WD=$(pwd)
     source ./gradle-tab-completion.bash
     CASHE_FILE="testCache"
-    if [[ $LOCAL_GRADLE_REPO == "" || $LOCAL_TASKS == "" || $LOCAL_FLAGS == "" ]];then
-        printf "INITIALISATION FAIL:\nLocal test varibles not set" && exit 1
+    if [[ $RUN_LARGE_TESTS == true ]]; then
+        if [[ $LOCAL_GRADLE_REPO == "" || $LOCAL_TASKS == "" || $LOCAL_FLAGS == "" ]];then
+            printf "INITIALISATION FAIL:\nLocal test varibles not set" && exit 1
+        fi
     fi
 }
 
@@ -82,7 +84,7 @@ test_should_invalidate_cache_when_file_content_changes() {
     assertEquals '' "$result"
 }
 
-test__should_be_able_to_read_values_from_cache() {
+testLarge__should_be_able_to_read_values_from_cache() {
     lcd $LOCAL_GRADLE_REPO
     local cwd=$(pwd)
     local hashString=$(getGradleChangesHash)
@@ -165,7 +167,7 @@ test__should_overwrite_cache_with_the_same_path() {
     done <<< $CASHE_FILE
 
     if [[ $pathCount > 1 ]]; then
-        fail "expectedc 1 cache recort, got '$pathCount'"
+        fail "expected 1 cache record, got '$pathCount'"
     fi
 }
 
