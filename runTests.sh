@@ -63,21 +63,25 @@ callTest() {
 }
 
 fail() {
-    echo "FAIL: ${FUNCNAME[1]} >"
-    printf "    $1\n" #we use printf so we can format the fail string
+    failFromStackDepth 1 "$1"
+}
+
+# allows specifyng the call-stack depth at which the error was thrown
+failFromStackDepth() {
+    printf "FAIL: $test_file(${BASH_LINENO[$1-1]}) > ${FUNCNAME[$1]}\n"
+    printf "    $2\n"
     callIfExists teardown
 
     ((FAILING_TESTS_IN_FILE++))
-    # exit 1
 }
 
 assertEquals() {
     if [[ $1 != $2 ]]; then
         maxSizeForMultiline=30
         if [[ "${#1}" -gt $maxSizeForMultiline || ${#2} -gt $maxSizeForMultiline ]]; then
-            fail "expected: '$1'\n    got:      '$2'"
+            failFromStackDepth 2 "expected: '$1'\n    got:      '$2'"
         else
-            fail "expected '$1', got '$2'"
+            failFromStackDepth 2 "expected '$1', got '$2'"
         fi
     fi
 }
