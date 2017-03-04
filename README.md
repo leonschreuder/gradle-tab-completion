@@ -60,6 +60,8 @@ Install
 ```
 curl -L -s https://raw.githubusercontent.com/meonlol/gradle-tab-completion/master/gradle-tab-completion.bash \
   -o ~/gradle-tab-completion.bash
+
+chmod +x ~/gradle-tab-completion.bash
 ```
 
 Then add this to your `~/.bash_profile`:
