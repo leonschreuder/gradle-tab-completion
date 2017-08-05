@@ -1,4 +1,4 @@
-1.8.0_05 (Oracle Corporation 25.5-b02)
+justSomeTask
 
 ------------------------------------------------------------
 All tasks runnable from root project
@@ -6,15 +6,15 @@ All tasks runnable from root project
 
 Build tasks
 -----------
-assemble - Assembles the outputs of this project.
-build - Assembles and tests this project.
-buildDependents - Assembles and tests this project and all projects that depend on it.
-buildNeeded - Assembles and tests this project and all projects it depends on.
+assemble - Assembles the outputs of this project. [jar]
+build - Assembles and tests this project. [assemble, check, syntastic]
 classes - Assembles main classes.
+    compileJava - Compiles main Java source.
+    processResources - Processes main resources.
 clean - Deletes the build directory.
-j9Classes - Assembles j9 classes.
-jar - Assembles a jar archive containing the main classes.
-testClasses - Assembles test classes.
+testClasses - Assembles test classes. [classes]
+    compileTestJava - Compiles test Java source.
+    processTestResources - Processes test resources.
 
 Build Setup tasks
 -----------------
@@ -23,54 +23,39 @@ wrapper - Generates Gradle wrapper files. [incubating]
 
 Documentation tasks
 -------------------
-javadoc - Generates Javadoc API documentation for the main source code.
+javadoc - Generates Javadoc API documentation for the main source code. [classes]
 
 Help tasks
 ----------
-buildEnvironment - Displays all buildscript dependencies declared in root project 'neospeech'.
-components - Displays the components produced by root project 'neospeech'. [incubating]
-dependencies - Displays all dependencies declared in root project 'neospeech'.
-dependencyInsight - Displays the insight into a specific dependency in root project 'neospeech'.
-dependentComponents - Displays the dependent components of components in root project 'neospeech'. [incubating]
-help - Displays a help message.
-model - Displays the configuration model of root project 'neospeech'. [incubating]
-projects - Displays the sub-projects of root project 'neospeech'.
-properties - Displays the properties of root project 'neospeech'.
-tasks - Displays the tasks runnable from root project 'neospeech' (some of the displayed tasks may belong to subprojects).
-
-IDE tasks
----------
-cleanEclipse - Cleans all Eclipse files.
-cleanIdea - Cleans IDEA project files (IML, IPR)
-eclipse - Generates all Eclipse files.
-idea - Generates IDEA project files (IML, IPR, IWS)
-
-Upload tasks
-------------
-uploadArchives - Uploads all artifacts belonging to configuration ':AppSpeechADI:archives'
+buildEnvironment - Displays all buildscript dependencies declared in root project 'movie-rental'.
+module:buildEnvironment - Displays all buildscript dependencies declared in project ':module'.
+components - Displays the components produced by root project 'movie-rental'. [incubating]
+module:components - Displays the components produced by project ':module'. [incubating]
+model - Displays the configuration model of root project 'movie-rental'. [incubating]
+module:model - Displays the configuration model of project ':module'. [incubating]
+projects - Displays the sub-projects of root project 'movie-rental'.
+module:projects - Displays the sub-projects of project ':module'.
+properties - Displays the properties of root project 'movie-rental'.
+module:properties - Displays the properties of project ':module'.
+tasks - Displays the tasks runnable from root project 'movie-rental' (some of the displayed tasks may belong to subprojects).
+module:tasks - Displays the tasks runnable from project ':module'.
 
 Verification tasks
 ------------------
-check - Runs all checks.
-test - Runs the unit tests.
+check - Runs all checks. [test]
+test - Runs the unit tests. [classes, testClasses]
+
+Vim tasks
+---------
+syntastic - Generate Syntastic Java configuration [classes, testClasses]
 
 Other tasks
 -----------
-backport
-compressTests
-deploy - Deploys the project to the target
-deployDownloadedArtifacts - Deploys the downloaded artifacts to the target
-deploySpeechAdi - Builds all jars for the AppSpeechCommon* and AppSpeechAdi* projects and copies them to the target
-deploySpeechRevo - Builds all jars for the AppSpeechCommon* and AppSpeechRevo* projects and copies them to the target
-dialogTests
+install - Installs the 'archives' artifacts into the local Maven repository. [jar]
+justSomeTask
 
 Rules
 -----
 Pattern: clean<TaskName>: Cleans the output files of a task.
 Pattern: build<ConfigurationName>: Assembles the artifacts of a configuration.
 Pattern: upload<ConfigurationName>: Assembles and uploads the artifacts belonging to a configuration.
-
-To see all tasks and more detail, run gradlew tasks --all
-
-To see more detail about a task, run gradlew help --task <task>
-

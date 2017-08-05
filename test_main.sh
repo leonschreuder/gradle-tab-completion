@@ -31,7 +31,7 @@ teardown() {
 testLarge__should_request_commands_from_gradle_when_no_cache_available() {
     lcd $LOCAL_GRADLE_REPO
 
-    result=$(getCommandsForCurrentPrefix)
+    result=$(getCommandsRespectingOptionalPrefix)
 
     assertEquals "$LOCAL_TASKS $LOCAL_FLAGS" "$result"
 }
@@ -40,7 +40,7 @@ testLarge__should_read_commands_from_cache_when_available() {
     tasks='testA testB btest module:project'
     writeTasksToCache "$tasks"
 
-    result=$(getCommandsForCurrentPrefix)
+    result=$(getCommandsRespectingOptionalPrefix)
 
     assertEquals "$tasks" "$result"
 }
@@ -50,7 +50,7 @@ test__should_hide_commands_with_dash() {
     commands="$tasks -h -? --help --version"
     writeTasksToCache "$commands"
 
-    result=$(getCommandsForCurrentPrefix)
+    result=$(getCommandsRespectingOptionalPrefix)
 
     assertEquals "$tasks" "$result"
 }
@@ -59,7 +59,7 @@ test__should_hide_double_dash_commands_when_current_prefix_is_dash() {
     commands='testA btest module:project -h -? --help --version testB'
     writeTasksToCache "$commands"
 
-    result=$(getCommandsForCurrentPrefix '-')
+    result=$(getCommandsRespectingOptionalPrefix '-')
 
     assertEquals "-h -?" "$result"
 }
@@ -145,11 +145,15 @@ test__should_get_tasks_from_output_with_simple_block() {
 test__should_get_tasks_from_output_with_multiple_headings_and_noise() {
     result=$(parseGradleTaskOutput "$(cat ./t/tasks-full.out)")
 
-    exp='assemble build buildDependents buildNeeded classes clean j9Classes jar testClasses init wrapper javadoc buildEnvironment components dependencies dependencyInsight dependentComponents help model projects properties tasks cleanEclipse cleanIdea eclipse idea uploadArchives check test backport compressTests deploy deployDownloadedArtifacts deploySpeechAdi deploySpeechRevo dialogTests'
+
+    exp='assemble build classes compileJava processResources clean testClasses compileTestJava processTestResources init wrapper javadoc buildEnvironment module:buildEnvironment components module:components model module:model projects module:projects properties module:properties tasks module:tasks check test syntastic install justSomeTask'
     if [[ $result != $exp ]]; then
         fail "expected: '$exp'\n    got: '$result'"
     fi
 }
+
+
+
 
 test__should_overwrite_cache_with_the_same_path() {
     touch ./build.gradle
@@ -195,6 +199,27 @@ test__should_get_cmdline_flags_from_complete_help_output() {
     result=$(parseGradleHelpOutput "$(cat ./t/help.out)")
 
     assertEquals '-? -h --help -a --no-rebuild -b --build-file -c --settings-file --configure-on-demand --console --continue -D --system-prop -d --debug --daemon --foreground -g --gradle-user-home --gui -I --init-script -i --info --include-build -m --dry-run --max-workers --no-daemon --offline -P --project-prop -p --project-dir --parallel --profile --project-cache-dir -q --quiet --recompile-scripts --refresh-dependencies --rerun-tasks -S --full-stacktrace -s --stacktrace --status --stop -t --continuous -u --no-search-upward -v --version -x --exclude-task' "$result"
+}
+
+test__should_return_all_when_empty() {
+
+    setCompletionFor "" "taskA taskB Ctask"
+
+    assertEquals 'taskA taskB Ctask' "${COMPREPLY[*]}"
+}
+
+test__should_complete_from_prefix() {
+
+    setCompletionFor "tas" "taska taskb ctask"
+
+    assertEquals 'taska taskb' "${COMPREPLY[*]}"
+}
+
+test__should_support_colons() {
+
+    setCompletionFor ":" ":taska :taskb"
+
+    assertEquals ':taska :taskb' "${COMPREPLY[*]}"
 }
 
 lcd() {

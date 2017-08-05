@@ -1,29 +1,37 @@
-export CASHE_FILE="$HOME/.gradle/.gradle_completion_cash"
+
+CASHE_FILE="$HOME/.gradle/.gradle_completion_cash"
 
 #TODO:
 # - gitbash & cygwin support
-# - module support
+# - surpassed by https://github.com/eriwen/gradle-completion ?
 
 _gradle() {
-    COMPREPLY=()
-    local cur=${COMP_WORDS[COMP_CWORD]}
+    local cur commands
 
-    local commands="$(getCommandsForCurrentPrefix $cur)"
+    _get_comp_words_by_ref -n : cur     # gets current word without being messed up by ':'
+    # TODO: Add below (dangerous) fallback for when above method not available? Does this even occur?
+    # COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 
-    colonprefixes=${cur%"${cur##*:}"}
-    COMPREPLY=( $(compgen -W "${commands}"  -- $cur))
-    local i=${#COMPREPLY[*]}
-    while [ $((--i)) -ge 0 ]; do
-        COMPREPLY[$i]=${COMPREPLY[$i]#"$colonprefixes"}
-    done
+    commands="$(getCommandsRespectingOptionalPrefix $cur)"
+
+    setCompletionFor "$cur" "$commands"
 }
 
-getCommandsForCurrentPrefix() {
+setCompletionFor() {
+    local cur="$1"
+    local commands="$2"
+    COMPREPLY=( $(compgen -W "${commands}"  -- $cur))
+
+    # Prevents recursive completion when contains a ':' (Not available in tests)
+    [[ -n "$(type -t __ltrim_colon_completions)" ]] && __ltrim_colon_completions "$cur"
+}
+
+getCommandsRespectingOptionalPrefix() {
     currentPrefix=$1
     commands=$(getCommandsFromCache)
     if [[ $currentPrefix == "-"* ]]; then
         if [[ $currentPrefix != "--"* ]]; then
-            commands=$(getSingleDashFromString "$commands")
+            commands=$(filterSingleDashCommands "$commands")
         # else
             # we have a double dash prefix, and can leave the commands as they are
         fi
@@ -37,8 +45,8 @@ getCommandsForCurrentPrefix() {
     echo $commands
 }
 
-getSingleDashFromString() {
-    # couldn't get a cross-platform solution to work, so filter the commands with a basic loop
+filterSingleDashCommands() {
+    # couldn't find a simple cross-platform solution, so loop to get only single dashed
     result=''
     for singleCommand in $1; do
         if [[ $singleCommand == -* &&  $singleCommand != --* ]]; then
@@ -104,7 +112,7 @@ getGradleChangesHash() {
 
 requestTasksFromGradle() {
     local gradle_cmd=$(getGradleCommand)
-    local taskCommandOutput=$($gradle_cmd tasks --console plain --quiet --offline)
+    local taskCommandOutput=$($gradle_cmd tasks --console plain --all --quiet --offline)
     echo $(parseGradleTaskOutput "$taskCommandOutput")
 }
 
@@ -190,3 +198,7 @@ parseGradleHelpOutput() {
 complete -F _gradle gradle
 complete -F _gradle gradlew
 complete -F _gradle ./gradlew
+
+if hash gw 2>/dev/null || alias gw >/dev/null 2>&1; then
+    complete -F _gradle gw
+fi
