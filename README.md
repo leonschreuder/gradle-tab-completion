@@ -9,6 +9,16 @@ tasks you can execute?
 
 Well now you can!
 
+**Edit:**  
+Well apparently someone had built this already, and gradle even made it
+repo-official: https://github.com/gradle/gradle-completion
+
+I lost all motivation after I discovered my
+let's-google-if-someone-already-built-this skills where in need of some
+polishing, but as I found that the aforementioned official gradle-completion
+was a bit over the top for my taste, I decided to finish my own version anyway.  
+Chef's Recommendations: tryout both and see which you prefer.
+
 Usage
 --------------------------------------------------------------------------------
 
