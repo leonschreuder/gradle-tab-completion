@@ -87,17 +87,17 @@ hasCache() {
 
 getGradleChangesHash() {
     if hash git 2>/dev/null; then
-        find . -name "*.gradle" 2> /dev/null \
+        find . -name "*.gradle" -type f 2> /dev/null \
             | xargs cat \
             | git hash-object --stdin
     elif hash md5 2>/dev/null; then
         # use md5 for hashing (Mac OS X)
-        find . -name "*.gradle" 2> /dev/null \
+        find . -name "*.gradle" -type f 2> /dev/null \
             | xargs cat \
             | md5
     else
         # use md5sum for hashing (Linux)
-        find . -name "*.gradle" 2> /dev/null \
+        find . -name "*.gradle" -type f 2> /dev/null \
             | xargs cat \
             | md5sum \
             | cut -f1 -d' '
@@ -108,12 +108,18 @@ getGradleChangesHash() {
 #------------------------------------------------------------
 
 buildCache() {
-    commands="$(requestTasksFromGradle) $(requestFlagsFromGradle)"
-    writeTasksToCache $commands
+    tasks="$(requestTasksFromGradle)"
+    flags="$(requestFlagsFromGradle)"
+    if [[ $tasks != '' && $flags != '' ]]; then
+        writeTasksToCache "$tasks $flags"
+    else
+        # one of the requests returned empty. Probably a broken build file.
+        >&2 echo "[ERROR] Error building completion cache. Is your build script broken?"
+    fi
 }
 
 requestTasksFromGradle() {
-    local outputOfTasksCommand=$($(getGradleCommand) tasks --console plain --all --quiet --offline)
+    local outputOfTasksCommand=$($(getGradleCommand) tasks --console plain --all --quiet)
     echo $(parseOutputOfTasksCommand "$outputOfTasksCommand")
 }
 
