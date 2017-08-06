@@ -55,21 +55,29 @@ removed are reflected instantly as well.
 Installation
 --------------------------------------------------------------------------------
 
+### The easy way
+Install in your user-home with something copy-past-able:
 ```
-curl -L -s https://raw.githubusercontent.com/meonlol/gradle-tab-completion/master/gradle-tab-completion.bash \
+curl -L \
+  -s https://raw.githubusercontent.com/meonlol/gradle-tab-completion/master/gradle-tab-completion.bash \
   -o ~/gradle-tab-completion.bash
-
 chmod +x ~/gradle-tab-completion.bash
+LINE="source ~/gradle-tab-completion.bash"; [[ -e ~/.bash_profile ]] && echo $LINE >> ~/.bash_profile || echo $LINE >> ~/.bashrc
 ```
 
-Then add this to your `~/.bash_profile`:
+### The 'correct' way
+Download the script file and put it one of the standard locations for completion scripts:
+- `/etc/bash_completion.d`  -  for all users,
+- `/usr/local/etc/bash_completion.d` -  for you
+- `~/bash_completion.d` - Also for you, but grouped in a neat directory.
 
-```
-source ~/gradle-tab-completion.bash
-```
+The script will then be automatically loaded.
 
 Credit
 --------------------------------------------------------------------------------
 
-This script was initially forked from [@nolanlawson](https://github.com/nolanlawson)
-here https://gist.github.com/nolanlawson/8694399/ .
+This script was initially forked from [this script](https://gist.github.com/nolanlawson/8694399/) by
+[@nolanlawson](https://github.com/nolanlawson). Also, after find out he'd
+already built this, I sometimes looked at what
+[@eriwen](https://github.com/eriwen) did in [his
+script](https://github.com/eriwen/gradle-completion).
