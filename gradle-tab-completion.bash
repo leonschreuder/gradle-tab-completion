@@ -13,23 +13,39 @@ CASHE_FILE="$HOME/.gradle/.gradle_completion_cash"
 #================================================================================
 
 _gradle() {
-    local cur commands
+    local cur prev commands
 
-    _get_comp_words_by_ref -n : cur     # gets current word without being messed up by ':'
-    # TODO: Add below (dangerous) fallback for when above method not available? Does this even occur?
-    # COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
+    _get_comp_words_by_ref -n : cur         # gets current word without being messed up by ':'
+    _get_comp_words_by_ref -n : -p prev
 
     buildCacheIfRequired
 
     commands="$(getCommandsForCurrentDirFromCache $cur)"
-    setCompletionFor "$cur" "$commands"
+    setCompletionFor "$prev" "$cur" "$commands"
 }
 
 
 setCompletionFor() {
-    local cur="$1"
-    local commands="$2"
-    COMPREPLY=( $(compgen -W "${commands}"  -- $cur))
+    local prev="$1"
+    local cur="$2"
+    local commands="$3"
+
+    case "$prev" in
+        # Commands followed by a file-path
+        -I|--init-script|-c|--settings-file|-b|--build-file)
+            COMPREPLY=( $(compgen -f -- $cur))
+            ;;
+        # Commands followed by a folder-path
+        -g|--gradle-user-home|--include-build|-p|--project-dir|--project-cache-dir)
+            COMPREPLY=( $(compgen -d -- $cur))
+            ;;
+        --console)
+            COMPREPLY=( $(compgen -W 'plain auto rich' -- $cur))
+            ;;
+        *)
+            COMPREPLY=( $(compgen -W "${commands}"  -- $cur))
+            # ;;
+    esac
 
     # Prevents recursive completion when contains a ':' (Not available in tests)
     [[ -n "$(type -t __ltrim_colon_completions)" ]] && __ltrim_colon_completions "$cur"
@@ -234,11 +250,11 @@ filterSingleDashCommands() {
 # Define the completion
 #================================================================================
 
-complete -F _gradle gradle
-complete -F _gradle gradlew
-complete -F _gradle ./gradlew
+complete -o bashdefault -F _gradle gradle
+complete -o bashdefault -F _gradle gradlew
+complete -o bashdefault -F _gradle ./gradlew
 
 if hash gw 2>/dev/null || alias gw >/dev/null 2>&1; then
-    complete -F _gradle gw
+    complete -o bashdefault -F _gradle gw
 fi
 

@@ -19,21 +19,39 @@ teardown() {
 #================================================================================
 
 test__completion_should_return_all_when_empty() {
-    setCompletionFor "" "taskA taskB Ctask"
+    setCompletionFor "" "" "taskA taskB Ctask"
     assertEquals 'taskA taskB Ctask' "${COMPREPLY[*]}"
 }
 
 test__completion_should_complete_from_prefix() {
-    setCompletionFor "tas" "taska taskb ctask"
+    setCompletionFor "" "tas" "taska taskb ctask"
     assertEquals 'taska taskb' "${COMPREPLY[*]}"
 }
 
 test__completion_should_support_colons() {
-    setCompletionFor ":" ":taska :taskb"
+    setCompletionFor "" ":" ":taska :taskb"
     assertEquals ':taska :taskb' "${COMPREPLY[*]}"
 
-    setCompletionFor "module:" "module:taska module:taskb"
+    setCompletionFor "" "module:" "module:taska module:taskb"
     assertEquals 'module:taska module:taskb' "${COMPREPLY[*]}"
+}
+
+test__completion_should_support_file_path_completion() {
+    # listing files and dirs
+    setCompletionFor "-I" "" ""
+    assertEquals '.git .travis.yml gradle-tab-completion.bash README.md runTests.sh t test_gradle-tab-completion.sh' "${COMPREPLY[*]}"
+
+    setCompletionFor "--build-file" "" ""
+    assertEquals '.git .travis.yml gradle-tab-completion.bash README.md runTests.sh t test_gradle-tab-completion.sh' "${COMPREPLY[*]}"
+}
+
+test__completion_should_support_dir_path_completion() {
+    # listing dirs only
+    setCompletionFor "-g" "" ""
+    assertEquals '.git t' "${COMPREPLY[*]}"
+
+    setCompletionFor "--project-cache-dir" "" ""
+    assertEquals '.git t' "${COMPREPLY[*]}"
 }
 
 test__should_support_default_gradle_installation() {
