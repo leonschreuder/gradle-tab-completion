@@ -9,8 +9,7 @@ setup() {
 teardown() {
     rm -f $CASHE_FILE
 
-    rm -f ./gradlew
-    rm -f ./build.gradle
+    rm -f gradlew build.gradle settings.gradle
 }
 
 
@@ -119,6 +118,16 @@ test_should_ignore_cache_when_file_content_changes() {
     writeTasksToCache "testA testB btest"
 
     echo "//something" >> ./build.gradle # changing file content which should invalidate the cache
+    result=$(getCommandsFromCache)
+
+    assertEquals '' "$result"
+}
+
+test_should_include_other_gradle_files_in_cache() {
+    touch ./build.gradle
+    writeTasksToCache "testA testB btest"
+
+    echo "//something" > ./settings.gradle
     result=$(getCommandsFromCache)
 
     assertEquals '' "$result"

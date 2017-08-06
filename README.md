@@ -22,29 +22,34 @@ version anyway.
 Usage
 --------------------------------------------------------------------------------
 
-It is autocompletion dummy. How did you think you where going to use it?
+It is just autocompletion dummy. How did you think you where going to use it?
 
 ```
     $ ./gradlew c[TAB]
 check                    clean                    connectedCheck           connectedInstrumentTest
 ```
 
-Sub-projects are supported:
+Okay, here it starts getting interesting: sub-projects are now also supported...
 
 ```
     $ ./gradlew proj[TAB]
 proj:check               proj:clean               proj:connectedCheck      proj:connectedInstrumentTest
 ```
 
-Flags as well:
+...and of course: flags. Flags expecting files or paths just work like you'd expect them to.
 
 ```
     $ ./gradlew --p[TAB]
 --parallel           --profile            --project-cache-dir  --project-dir        --project-prop
+
+    $ ./gradlew --project-cache-dir [TAB]
+dir1                dir2
 ```
 
+
+### Note on cache:
 Results are cached on first run and completion is fast after that. Caches are
-invalidated by changes in your build.gradle scripts, so tasks that are added or
+invalidated by changes in your *.gradle scripts, so tasks that are added or
 removed are reflected instantly as well.
 
 Installation

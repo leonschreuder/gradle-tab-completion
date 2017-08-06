@@ -87,17 +87,17 @@ hasCache() {
 
 getGradleChangesHash() {
     if hash git 2>/dev/null; then
-        find . -name build.gradle 2> /dev/null \
+        find . -name "*.gradle" 2> /dev/null \
             | xargs cat \
             | git hash-object --stdin
     elif hash md5 2>/dev/null; then
         # use md5 for hashing (Mac OS X)
-        find . -name build.gradle 2> /dev/null \
+        find . -name "*.gradle" 2> /dev/null \
             | xargs cat \
             | md5
     else
         # use md5sum for hashing (Linux)
-        find . -name build.gradle 2> /dev/null \
+        find . -name "*.gradle" 2> /dev/null \
             | xargs cat \
             | md5sum \
             | cut -f1 -d' '
