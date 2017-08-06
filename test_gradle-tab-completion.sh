@@ -38,11 +38,11 @@ test__completion_should_support_colons() {
 
 test__completion_should_support_file_path_completion() {
     # listing files and dirs
-    setCompletionFor "-I" "" ""
-    assertEquals '.git .travis.yml gradle-tab-completion.bash README.md runTests.sh t test_gradle-tab-completion.sh' "${COMPREPLY[*]}"
+    setCompletionFor "-I" "./t/" ""
+    assertEquals './t/help.out ./t/tasks-full.out' "${COMPREPLY[*]}"
 
-    setCompletionFor "--build-file" "" ""
-    assertEquals '.git .travis.yml gradle-tab-completion.bash README.md runTests.sh t test_gradle-tab-completion.sh' "${COMPREPLY[*]}"
+    setCompletionFor "--build-file" "./t/" ""       # Last flag to make sure the case-syntax is correct
+    assertEquals './t/help.out ./t/tasks-full.out' "${COMPREPLY[*]}"
 }
 
 test__completion_should_support_dir_path_completion() {
@@ -50,7 +50,7 @@ test__completion_should_support_dir_path_completion() {
     setCompletionFor "-g" "" ""
     assertEquals '.git t' "${COMPREPLY[*]}"
 
-    setCompletionFor "--project-cache-dir" "" ""
+    setCompletionFor "--project-cache-dir" "" ""    # Last flag to make sure the case-syntax is correct
     assertEquals '.git t' "${COMPREPLY[*]}"
 }
 
