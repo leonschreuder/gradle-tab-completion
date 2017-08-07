@@ -2,12 +2,22 @@
 # https://gist.github.com/nolanlawson/8694399/      # Initial Gist
 # https://github.com/eriwen/gradle-completion       # Other completion engine I found later
 
-CASHE_FILE="$HOME/.gradle/.gradle_completion_cash"
 
+CASHE_FILE=".gradle/.gradle_completion_cash"
 
-#TODO:
-# - test gitbash & cygwin support
+if [ -n "$GRADLE_USER_HOME" ] ; then
+    CASHE_FILE="$GRADLE_USER_HOME/$CASHE_FILE"
+else
+    if [[ $(uname) = MINGW* || $(uname) = CYGWIN* ]] ; then
+        # On windows in gitbash or cygwin...
+        CASHE_FILE="$USERPROFILE/$CASHE_FILE"
+    else
+        CASHE_FILE="$HOME/$CASHE_FILE"
+    fi
+fi
 
+# TODO:
+# Cache now working, but does not complete at all...
 
 # Main
 #================================================================================
