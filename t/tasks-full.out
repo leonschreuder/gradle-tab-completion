@@ -39,6 +39,13 @@ properties - Displays the properties of root project 'movie-rental'.
 module:properties - Displays the properties of project ':module'.
 tasks - Displays the tasks runnable from root project 'movie-rental' (some of the displayed tasks may belong to subprojects).
 module:tasks - Displays the tasks runnable from project ':module'.
+dashed-module:buildEnvironment - Displays all buildscript dependencies declared in project ':dashed-module'.
+dashed-module:components - Displays the components produced by project ':dashed-module'. [incubating]
+dashed-module:model - Displays the configuration model of project ':dashed-module'. [incubating]
+dashed-module:projects - Displays the sub-projects of project ':dashed-module'.
+dashed-module:properties - Displays the properties of project ':dashed-module'.
+dashed-module:tasks - Displays the tasks runnable from project ':dashed-module'.
+
 
 Verification tasks
 ------------------

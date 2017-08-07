@@ -30,6 +30,8 @@ setCompletionFor() {
     local cur="$2"
     local commands="$3"
 
+    # >&2 echo -e "\nprev=$prev cur=$cur commands=$commands"
+
     case "$prev" in
         # Commands followed by a file-path
         -I|--init-script|-c|--settings-file|-b|--build-file)
@@ -119,7 +121,7 @@ buildCache() {
 }
 
 requestTasksFromGradle() {
-    local outputOfTasksCommand=$($(getGradleCommand) tasks --console plain --all --quiet)
+    local outputOfTasksCommand=$($(getGradleCommand) tasks --console plain --all --quiet --offline)
     echo $(parseOutputOfTasksCommand "$outputOfTasksCommand")
 }
 
@@ -205,8 +207,9 @@ getCommandsForCurrentDirFromCache() {
             # The user typed a double dash already, completion will filter the single-dashed results out
         fi
     else
-        commands=${commands//-*/}
+        commands=${commands// -*/}
     fi
+    # >&2 echo -e "\n commands=$commands"
 
     echo $commands
 }
