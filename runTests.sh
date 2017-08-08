@@ -72,7 +72,7 @@ callTest() {
 }
 
 fail() {
-    failFromStackDepth 1 "$1"
+    failFromStackDepth 2 "$1"
 }
 
 # allows specifyng the call-stack depth at which the error was thrown
