@@ -63,8 +63,8 @@ test__should_support_default_gradle_installation() {
 }
 
 test__should_support_gradle_wrapper() {
-    touch ./gradlew
-    chmod +x ./gradlew
+    echo '#!/bin/bash' > gradlew    # Hashbang to make it executable in git-bash
+    chmod +x ./gradlew              # For *nix
 
     local result=$(getGradleCommand)
 
@@ -93,10 +93,7 @@ test__should_get_all_commands_from_gadle_tasks_output() {
     result=$(parseOutputOfTasksCommand "$(cat ./t/tasks-full.out)")
 
     exp='assemble build classes compileJava processResources clean testClasses compileTestJava processTestResources init wrapper javadoc buildEnvironment module:buildEnvironment components module:components model module:model projects module:projects properties module:properties tasks module:tasks dashed-module:buildEnvironment dashed-module:components dashed-module:model dashed-module:projects dashed-module:properties dashed-module:tasks check test syntastic install justSomeTask'
-    # exp='assemble build classes compileJava processResources clean testClasses compileTestJava processTestResources init wrapper javadoc buildEnvironment module:buildEnvironment components module:components model module:model projects module:projects properties module:properties tasks module:tasks check test syntastic install justSomeTask'
-    if [[ $result != $exp ]]; then
-        fail "expected: '$exp'\n    got: '$result'"
-    fi
+    assertEquals "$exp" "$result"
 }
 
 test__should_get_cmdline_flags_from_help_string() {

@@ -143,7 +143,7 @@ parseOutputOfTasksCommand() {
     while read -r line || [[ -n $line ]]; do
         if [[ $line == "--"* && $lastLineEmpty == 0 ]]; then
             readingTasks=1
-        elif [[ $line == '' ]]; then
+        elif [[ $line != *[![:space:]]* ]]; then
             readingTasks=0
             lastLineEmpty=1
         else
