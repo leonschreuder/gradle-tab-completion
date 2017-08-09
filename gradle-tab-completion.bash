@@ -9,15 +9,14 @@ if [ -n "$GRADLE_USER_HOME" ] ; then
     CASHE_FILE="$GRADLE_USER_HOME/$CASHE_FILE"
 else
     if [[ $(uname) = MINGW* || $(uname) = CYGWIN* ]] ; then
-        # On windows in gitbash or cygwin...
+        # On windows (gitbash or cygwin)
         CASHE_FILE="$USERPROFILE/$CASHE_FILE"
     else
+        # Some sys-admins like to set home somewhere special, so try it last
         CASHE_FILE="$HOME/$CASHE_FILE"
     fi
 fi
 
-# TODO:
-# Cache now working, but does not complete at all...
 
 # Main
 #================================================================================
@@ -264,6 +263,16 @@ filterSingleDashCommands() {
     echo $result
 }
 
+# Should be available by default but was missing in git-bash.
+__ltrim_colon_completions() {
+    if [[ "$1" == *:* && ( ${BASH_VERSINFO[0]} -lt 4 || ( ${BASH_VERSINFO[0]} -ge 4 && "$COMP_WORDBREAKS" == *:* ) ) ]]; then
+        local colon_word=${1%${1##*:}};
+        local i=${#COMPREPLY[*]};
+        while [ $((--i)) -ge 0 ]; do
+            COMPREPLY[$i]=${COMPREPLY[$i]#"$colon_word"};
+        done;
+    fi
+}
 
 
 # Define the completion

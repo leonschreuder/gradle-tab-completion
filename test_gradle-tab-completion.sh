@@ -28,11 +28,13 @@ test__completion_should_complete_from_prefix() {
 }
 
 test__completion_should_support_colons() {
-    setCompletionFor "" ":" ":taska :taskb"
-    assertEquals ':taska :taskb' "${COMPREPLY[*]}"
+    # completes full-tasks before colon
+    setCompletionFor "" "taska" "taska:tasks taska:dependencies"
+    assertEquals 'taska:tasks taska:dependencies' "${COMPREPLY[*]}"
 
+    # completes sub-module tasks only, after a colon
     setCompletionFor "" "module:" "module:taska module:taskb"
-    assertEquals 'module:taska module:taskb' "${COMPREPLY[*]}"
+    assertEquals 'taska taskb' "${COMPREPLY[*]}"
 }
 
 test__completion_should_support_file_path_completion() {
