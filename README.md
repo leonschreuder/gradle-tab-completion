@@ -1,7 +1,9 @@
 [![Build Status](https://travis-ci.org/meonlol/gradle-tab-completion.svg?branch=master)](https://travis-ci.org/meonlol/gradle-tab-completion)
 
-A Gradle tab completion script for Bash
+A Gradle tab completion script for (git)Bash
 ================================================================================
+
+**Now also works in git-bash**
 
 Do you use gradle from the commandline and sometimes find yourself staring
 dreamily into the distance at the thought of just pressing tab to see which
@@ -58,11 +60,10 @@ Installation
 ### The easy way
 Install in your user-home with something copy-past-able:
 ```
-curl -L \
-  -s https://raw.githubusercontent.com/meonlol/gradle-tab-completion/master/gradle-tab-completion.bash \
-  -o ~/gradle-tab-completion.bash
-chmod +x ~/gradle-tab-completion.bash
-LINE="source ~/gradle-tab-completion.bash"; [[ -e ~/.bash_profile ]] && echo $LINE >> ~/.bash_profile || echo $LINE >> ~/.bashrc
+cd ~ #or whereever
+curl https://raw.githubusercontent.com/meonlol/gradle-tab-completion/master/gradle-tab-completion.bash -o gradle-tab-completion.bash
+chmod +x gradle-tab-completion.bash
+LINE="source $(pwd)/gradle-tab-completion.bash"; [[ -e ~/.bash_profile ]] && echo $LINE >> ~/.bash_profile || echo $LINE >> ~/.bashrc
 ```
 
 ### The 'correct' way
